@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,7 +60,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png"
+      <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -68,7 +75,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Ronaldo</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -116,7 +123,7 @@
           </li>
           <li class="nav-header">AUTH</li>
           <li class="nav-item">
-            <a href="logout.php" class="nav-link">
+            <a href="login.php" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
               <p>Logout</p>
             </a>
@@ -161,7 +168,7 @@
               <div class="card-tools">
                 <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip"
                         title="Collapse">
-                  <i class="fas fa-minus"></i></button>
+                  <i class="fas fa-minus"></i></button> | 
                 <button type="button" class="btn btn-tool btn-sm" data-card-widget="remove" data-toggle="tooltip"
                         title="Remove">
                   <i class="fas fa-times"></i></button>
@@ -172,10 +179,17 @@
             <div class="card-body pad">
                 <!-- <p>Page <code>1</code></p> -->
                 <div class="input-group input-group-sm mb-3">
-                  <input type="number" class="form-control" id="valuepage" value="1" readonly>
+                  <input type="text" class="form-control" id="titlepaperwork" value="" placeholder="Title Paperwork"> 	&nbsp;	&nbsp;
+                  <input type="text" class="form-control" id="createdby" value="" placeholder="Created By" readonly> 	&nbsp;	&nbsp;
                   <span class="input-group-append">
-                    <button type="button" class="btn btn-info btn-flat" id="AddPage">Add Page</button> 
-                    <button type="button" class="btn btn-warning btn-flat" id="DeletePage">Delete Page</button>
+                    <button type="button" class="btn btn-info btn-flat" id="AddPage">Save Paperwork</button>
+                  </span>
+                </div>
+                <div class="input-group input-group-sm mb-3">
+                  <input type="number" class="form-control" id="valuepage" value="1" readonly> 	&nbsp;	&nbsp;
+                  <span class="input-group-append">
+                    <button type="button" class="btn btn-success btn-flat" id="AddPage">Add Page</button> 	&nbsp;	&nbsp;
+                    <button type="button" class="btn btn-danger btn-flat" id="DeletePage">Delete Page</button>
                   </span>
                 </div>
                 <div class="input-group input-group-sm" id="div_1">

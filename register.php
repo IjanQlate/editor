@@ -8,7 +8,7 @@ session_destroy();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-PAPERWORK (LOGIN)</title>
+    <title>E-PAPERWORK (REGISTER)</title>
     <link rel="stylesheet" type="text/css" href="auth_vendor/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="auth_vendor/css/iofrm-style.css">
@@ -19,7 +19,7 @@ session_destroy();
         <div class="website-logo">
             <a href="index.html">
                 <div class="logo">
-                    <!-- <img class="logo-size" src="logo.png" alt=""> -->
+                    <!-- <img class="logo-size" src="auth_vendor/images/logo-light.svg" alt=""> -->
                 </div>
             </a>
         </div>
@@ -27,27 +27,35 @@ session_destroy();
             <div class="img-holder">
                 <div class="bg"></div>
                 <div class="info-holder">
-                    <!-- <img src="logo.png" alt=""> -->
+                    <!-- <img src="auth_vendor/images/graphic3.svg" alt=""> -->
                 </div>
             </div>
             <div class="form-holder">
                 <div class="form-content">
                     <div class="form-items">
-                        <h3>Login to account</h3>
-                        <form action="auth/auth.php" method="post" id="formlogin">
+                        <h3>Register new account</h3>
+                        <form action="auth/auth.php" method="POST" id="formregister">
+                            <input class="form-control" type="text" name="name" id="name" placeholder="Full Name" required>
+                            <input class="form-control" type="email" name="email" id="email" placeholder="E-mail Address" required>
                             <input class="form-control" type="text" name="username" id="username" placeholder="Username" required>
                             <input class="form-control" type="password" name="password" id="password" placeholder="Password" required>
+                            <select name="group" id="group" class="form-control">
+                                <option value="">Please select</option>
+                                <option value="Pengarah Program">Pengarah Program</option>
+                                <option value="Sokongan">Sokongan</option>
+                                <option value="Pengarah">Pengarah</option>
+                            </select>
                             <div class="form-button">
-                                <button id="submit" type="button" class="ibtn">Login</button>
+                                <button id="submit" type="button" class="ibtn">Register</button>
                             </div>
                             <small id="message" style="color:red"></small>
                         </form>
                         <div class="other-links">
-                            <!-- <div class="text">Or login with</div>
+                            <!-- <div class="text">Or register with</div>
                             <a href="#"><i class="fab fa-facebook-f"></i>Facebook</a><a href="#"><i class="fab fa-google"></i>Google</a><a href="#"><i class="fab fa-linkedin-in"></i>Linkedin</a> -->
                         </div>
                         <div class="page-links">
-                            <a href="register.php">Register new account</a>
+                            <a href="login.php">Login to account</a>
                         </div>
                     </div>
                 </div>
@@ -63,7 +71,7 @@ session_destroy();
 <script>
 $(function(){
 
-    var form = $("#formlogin");
+    var form = $("#formregister");
     form.validate();
 
     $("#submit").on("click", function(){
@@ -71,19 +79,15 @@ $(function(){
         if (form.valid()) {
 
             $.ajax({
-                url: $("#formlogin").attr("action"),
-                method: $("#formlogin").attr("method"),
+                url: $("#formregister").attr("action"),
+                method: $("#formregister").attr("method"),
                 dataType: "text",
-                data: $("#formlogin").serialize() + "&function=login",
+                data: $("#formregister").serialize() + "&function=register",
                 success: function (data){
 
-                    console.log(data);
-                    if (data == "Password is valid!") {
-                        window.location.replace("http://localhost/editor/home.php");
-                    } else {
-                        $("#message").html(data);
-                        form[0].reset();
-                    }
+                    // console.log(data);
+                    $("#message").html(data);
+                    form[0].reset();
 
                 }
             });

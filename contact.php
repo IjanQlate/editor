@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,7 +60,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png"
+      <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -68,7 +75,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Ronaldo</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -116,7 +123,7 @@
           </li>
           <li class="nav-header">AUTH</li>
           <li class="nav-item">
-            <a href="logout.php" class="nav-link">
+            <a href="login.php" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
               <p>Logout</p>
             </a>
@@ -150,32 +157,102 @@
 
     <!-- Main content -->
     <section class="content">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="card card-outline card-info">
-            <div class="card-header">
-              <h3 class="card-title">
-                Contact Us
-              </h3>
-              <!-- tools box -->
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip"
-                        title="Collapse">
-                  <i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                  <i class="fas fa-times"></i></button>
+      <!-- Default box -->
+      <div class="card card-solid">
+        <div class="card-body pb-0">
+          <div class="row d-flex align-items-stretch">
+            <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0">
+                  Developer E-PAPERWORK
+                </div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Husna</b></h2>
+                      <p class="text-muted text-sm"><b>About: </b> Student Politeknik Mersing </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="far fa-envelope"></i></span> Email Address : husnayais00@gmail.com </li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone : 0146140983</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                  </div>
+                </div>
               </div>
-              <!-- /. tools -->
             </div>
-            <!-- /.card-header -->
-            <div class="card-body pad">
-
+            <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0">
+                  Developer E-PAPERWORK
+                </div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Noremyliana</b></h2>
+                      <p class="text-muted text-sm"><b>About: </b> Student Politeknik Mersing </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="far fa-envelope"></i></span> Email Address : emylianarahmad@gmail.com</li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone : 01163664624</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="dist/img/user2-160x160.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0">
+                  Developer E-PAPERWORK
+                </div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Nuraliah Natasha </b></h2>
+                      <p class="text-muted text-sm"><b>About: </b> Student Politeknik Mersing </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="far fa-envelope"></i></span> Email Address : aliahnatasha235@gmail.com</li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone : 01162314235</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- /.col-->
+        <!-- /.card-footer -->
       </div>
-      <!-- ./row -->
+      <!-- /.card -->
     </section>
     <!-- /.content -->
   </div>

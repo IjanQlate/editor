@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,7 +60,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png"
+      <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -68,7 +75,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Ronaldo</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -151,11 +158,11 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" style="height:1000px !important; width:100%">
           <div class="card card-outline card-info">
             <div class="card-header">
               <h3 class="card-title">
-                Help
+                GUIDE TO WRITING A PAPERWORK
               </h3>
               <!-- tools box -->
               <div class="card-tools">
@@ -170,7 +177,11 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body pad">
+            <?php
 
+            echo "<iframe src=\"docs\GUIDE TO WRITING A PAPERWORK.pdf\" width=\"100%\" style=\"height:600px\"></iframe>";
+
+            ?>
           </div>
         </div>
         <!-- /.col-->

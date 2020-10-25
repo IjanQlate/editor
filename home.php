@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -68,7 +75,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Husna</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -116,7 +123,7 @@
           </li>
           <li class="nav-header">AUTH</li>
           <li class="nav-item">
-            <a href="logout.php" class="nav-link">
+            <a href="login.php" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
               <p>Logout</p>
             </a>
@@ -153,24 +160,34 @@
       <div class="row">
         <div class="col-md-12">
           <div class="card card-outline card-info">
-            <div class="card-header">
-              <h3 class="card-title">
-                Home
-              </h3>
-              <!-- tools box -->
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip"
-                        title="Collapse">
-                  <i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                  <i class="fas fa-times"></i></button>
-              </div>
-              <!-- /. tools -->
+            <div class="card-body">
+                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                  <ol class="carousel-indicators">
+                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                  </ol>
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                      <img class="d-block w-100" src="https://placehold.it/900x500/39CCCC/ffffff&text=Welcome+To+E-PAPERWORK" alt="First slide">
+                    </div>
+                    <div class="carousel-item">
+                      <img class="d-block w-100" src="https://placehold.it/900x500/3c8dbc/ffffff&text=Create+With+Simple+Steps" alt="Second slide">
+                    </div>
+                    <div class="carousel-item">
+                      <img class="d-block w-100" src="https://placehold.it/900x500/f39c12/ffffff&text=Thank+You+For+Choosing+Us" alt="Third slide">
+                    </div>
+                  </div>
+                  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </div>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body pad">
-
           </div>
         </div>
         <!-- /.col-->

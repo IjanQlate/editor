@@ -1,3 +1,12 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+include 'db/dbconfig.php';
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,9 +25,22 @@
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
 
+  <!-- DataTables -->
+  <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+
   <link href="plugins/jquery-steps/demo/css/jquery.steps.css" rel="stylesheet">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+  <style>
+    th { font-size: 12px; }
+    td { font-size: 11px; }
+
+    .selected {
+      background-color: #d1f9ff;
+    }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -53,7 +75,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png"
+      <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -68,7 +90,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Ronaldo</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -116,7 +138,7 @@
           </li>
           <li class="nav-header">AUTH</li>
           <li class="nav-item">
-            <a href="logout.php" class="nav-link">
+            <a href="login.php" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
               <p>Logout</p>
             </a>
@@ -153,31 +175,81 @@
       <div class="row">
         <div class="col-md-12">
           <div class="card card-outline card-info">
-            <div class="card-header">
-              <h3 class="card-title">
-                Search
-              </h3>
-              <!-- tools box -->
+              <div class="card-header">
+                <h3 class="card-title"></h3>
+                              <!-- tools box -->
               <div class="card-tools">
                 <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip"
                         title="Collapse">
                   <i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                  <i class="fas fa-times"></i></button>
               </div>
               <!-- /. tools -->
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered nowrap">
+                  <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>View</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    <th>Approval</th>                    
+                    <th>Title</th>
+                    <th>Owner</th>
+                    <th>Status Approval</th>
+                    <th>Comment</th>
+                    <th>Created Date</th>
+                    <th>Updated By</th>
+                    <th>Last Updated</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <?php 
+                    $sql = "SELECT * FROM paperwork";
+                    $result = $conn->query($sql);
+                    
+                    if ($result->num_rows > 0) {
+                      // output data of each row
+                      $no = 1;
+                      while($row = $result->fetch_assoc()) {
+                    ?>
+                    <tr>
+                        <td><?php echo $no; ?></td>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-primary btn-xs\" id=\"view\" >View</button>"; ?></td>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-warning btn-xs\" id=\"edit\" >Edit</button>"; ?></td>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-danger btn-xs\" id=\"delete\" >Delete</button>"; ?></td>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-info btn-xs\" id=\"approve\" >Approve</button>"; ?></td>
+                        <td><?php echo $row['title']; ?></td>
+                        <td><?php echo $row['owner']; ?></td>
+                        <td><?php echo $row['status']; ?></td>
+                        <td><?php echo $row['comment']; ?></td>
+                        <td><?php echo $row['createddate']; ?></td>
+                        <td><?php echo $row['updatedby']; ?></td>
+                        <td><?php echo $row['lastupdate']; ?></td>
+                    </tr>
+                    <?php
+                        $no++;
+                      }
+                    }
+                    $conn->close();
+                    ?>
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
             </div>
-            <!-- /.card-header -->
-            <div class="card-body pad">
 
-          </div>
         </div>
         <!-- /.col-->
       </div>
       <!-- ./row -->
     </section>
     <!-- /.content -->
+
+
+
+
   </div>
   <!-- /.content-wrapper -->
   <footer class="main-footer">
@@ -210,8 +282,55 @@
 <script src="plugins/summernote/summernote-ext-print.js"></script>
 
 <script src="plugins/jquery-steps/build/jquery.steps.js"></script>
-<script>
 
+<!-- DataTables -->
+<script src="plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+
+<script>
+  $(function () {
+    var table = $("#example1").DataTable({
+      "scrollX": true,
+      "select": true
+    });
+
+    $("#view").on("click", function() {
+      alert ("View");
+      console.log(table.row('.selected').data());
+      var dataArr = [];
+    $.each($("#example1 tr.selected"),function(){ //get each tr which has selected class
+        dataArr.push($(this).find('td').eq(0).text()); //find its first td and push the value
+        //dataArr.push($(this).find('td:first').text()); You can use this too
+    });
+    console.log(dataArr);      
+    });
+
+    $("#edit").on("click", function() {
+      alert ("Edit");
+    });
+
+    $("#delete").on("click", function() {
+      alert ("Delete");
+    });
+
+    $("#approve").on("click", function() {
+      alert ("Approve");
+    });
+
+    $('#example1 tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+  });
 </script>
 </body>
 </html>

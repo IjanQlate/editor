@@ -1,3 +1,17 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+
+include 'db/dbconfig.php';
+$email = $_SESSION['email'];
+$sql = "SELECT * FROM user WHERE email = '$email'";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,10 +44,10 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="index3.html" class="nav-link">Home</a>
+        <a href="home.php" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
+        <a href="contact.php" class="nav-link">Contact</a>
       </li>
     </ul>
 
@@ -53,7 +67,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png"
+      <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -68,7 +82,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Ronaldo</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -116,7 +130,7 @@
           </li>
           <li class="nav-header">AUTH</li>
           <li class="nav-item">
-            <a href="logout.php" class="nav-link">
+            <a href="login.php" class="nav-link">
               <i class="nav-icon far fa-circle text-info"></i>
               <p>Logout</p>
             </a>
@@ -150,32 +164,98 @@
 
     <!-- Main content -->
     <section class="content">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="card card-outline card-info">
-            <div class="card-header">
-              <h3 class="card-title">
-                My Account
-              </h3>
-              <!-- tools box -->
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip"
-                        title="Collapse">
-                  <i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                  <i class="fas fa-times"></i></button>
-              </div>
-              <!-- /. tools -->
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#settings" data-toggle="tab">MY ACCOUNT</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#changepassword" data-toggle="tab">CHANGE PASSWORD</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="settings">
+                    <form class="form-horizontal" action="auth/auth.php" method="POST" id="myaccount">
+                      <input type="text" name="id" id="id" value="<?php echo $row['id']; ?>" readonly hidden>
+                      <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" name="name" id="name" value="<?php echo $row['name']; ?>" placeholder="Name" required>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="email" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                          <input type="email" class="form-control" name="email" id="email" value="<?php echo $row['email']; ?>" placeholder="Email" required>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="username" class="col-sm-2 col-form-label">Username</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="username" name="username" value="<?php echo $row['username']; ?>" placeholder="Username" required>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="group" class="col-sm-2 col-form-label">Group</label>
+                        <div class="col-sm-10">
+                          <!-- <input type="text" class="form-control" name="group" id="group" value="<?php echo $row['group_system']; ?>" placeholder="Group System"> -->
+                          <select name="group" id="group" class="form-control" required>
+                            <option <?php if ($row['group_system'] == "Pengarah Program") { echo ' selected="selected"'; } ?> value="Pengarah Program">Pengarah Program</option>
+                            <option <?php if ($row['group_system'] == "Sokongan") { echo ' selected="selected"'; } ?> value="Sokongan">Sokongan</option>
+                            <option <?php if ($row['group_system'] == "Pengarah") { echo ' selected="selected"'; } ?> value="Pengarah">Pengarah</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <button type="button" name="saveprofile" id="saveprofile" class="btn btn-danger">Submit</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="changepassword">
+                    <form class="form-horizontal" action="auth/auth.php" method="POST" id="changepasswordform">
+                      <input type="text" name="id" id="id" value="<?php echo $row['id']; ?>" readonly hidden>
+                      <div class="form-group row">
+                        <label for="currentpassword" class="col-sm-4 col-form-label">Current Password</label>
+                        <div class="col-sm-8">
+                          <input type="password" class="form-control" name="currentpassword" id="currentpassword" placeholder="Current Password" required>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="newpassword" class="col-sm-4 col-form-label">New Password</label>
+                        <div class="col-sm-8">
+                          <input type="password" class="form-control" name="newpassword" id="newpassword" placeholder="New Password" required>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="newpassword" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-8">
+                          <small id="message" style="color:red"></small>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <div class="offset-sm-4 col-sm-8">
+                          <button type="button" id="changepasswordbtn" class="btn btn-danger">Change Password</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
             </div>
-            <!-- /.card-header -->
-            <div class="card-body pad">
-
+            <!-- /.nav-tabs-custom -->
           </div>
+          <!-- /.col -->
         </div>
-        <!-- /.col-->
-      </div>
-      <!-- ./row -->
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    <!-- ./row -->
     </section>
     <!-- /.content -->
   </div>
@@ -210,8 +290,69 @@
 <script src="plugins/summernote/summernote-ext-print.js"></script>
 
 <script src="plugins/jquery-steps/build/jquery.steps.js"></script>
-<script>
 
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/additional-methods.min.js"></script>
+<script>
+$(function() {
+
+  var myaccount = $("#myaccount");
+  var changepassword = $("#changepasswordform");
+
+  myaccount.validate();
+  changepassword.validate();
+
+  $("#saveprofile").on("click", function() {
+
+    if (myaccount.valid()) {
+
+      $.ajax({
+          url: myaccount.attr("action"),
+          method: myaccount.attr("method"),
+          dataType: "text",
+          data: myaccount.serialize() + "&function=myaccount",
+          success: function (data){
+
+              console.log(data);
+              if (data == "Successfully changed your detail") {
+                alert ("Successful, please relogin");
+                window.location.replace("http://localhost/editor/login.php");
+              } else {
+                alert (data);
+              }
+          }
+      });
+
+    }
+
+
+  });
+
+  $("#changepasswordbtn").on("click", function() {
+
+    if (changepassword.valid()) {
+
+      $.ajax({
+          url: changepassword.attr("action"),
+          method: changepassword.attr("method"),
+          dataType: "text",
+          data: changepassword.serialize() + "&function=changepassword",
+          success: function (data){
+
+              console.log(data);
+              $("#message").html(data);
+              if (data == "Password has been changed") {
+                changepassword[0].reset();
+              }
+          }
+      });
+
+    }
+
+
+  });
+
+});
 </script>
 </body>
 </html>

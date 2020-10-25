@@ -1,3 +1,39 @@
+<?php
+session_start();
+if (empty($_SESSION['name'])){
+  header("Location: http://localhost/editor/login.php");
+  die();
+}
+$msg = "";
+if (isset($_POST['feedback'])) {
+
+  include 'db/dbconfig.php';
+
+  $like = $_POST['like'];
+  $dontlike = $_POST['dontlike'];
+  $suggestion = $_POST['suggestion'];
+  $name = $_SESSION['name'];
+
+  if ($like == "" && $dontlike == "" && $suggestion == "") {
+    $msg = "Please insert some value before save";
+  } else {
+      $sql = "INSERT INTO feedback (ilikesomething, idontlikesomething, ihavesuggestion, sendby)
+      VALUES ('$like', '$dontlike', '$suggestion', '$name')";
+      
+      if ($conn->query($sql) === TRUE) {
+        $msg = "Successfully send feedback. Thank you for your feedback";
+      } else {
+        $msg = "Error Save Feedback. Kindly retry again";
+      }
+  }
+  
+  $conn->close();
+
+}
+
+
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,7 +89,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
-      <img src="dist/img/AdminLTELogo.png"
+      <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -68,7 +104,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Ronaldo</a>
+          <a href="#" class="d-block"><?php echo $_SESSION['name']; ?></a>
         </div>
       </div>
 
@@ -147,31 +183,73 @@
         </div>
       </div><!-- /.container-fluid -->
     </section>
-
     <!-- Main content -->
     <section class="content">
       <div class="row">
         <div class="col-md-12">
-          <div class="card card-outline card-info">
+          <div class="card card-secondary card-info">
             <div class="card-header">
               <h3 class="card-title">
-                Feedback
+                What kind of feedback do you have ?
               </h3>
               <!-- tools box -->
               <div class="card-tools">
                 <button type="button" class="btn btn-tool btn-sm" data-card-widget="collapse" data-toggle="tooltip"
                         title="Collapse">
                   <i class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool btn-sm" data-card-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                  <i class="fas fa-times"></i></button>
               </div>
               <!-- /. tools -->
             </div>
             <!-- /.card-header -->
             <div class="card-body pad">
-
+            <form action="feedback.php" method="post">
+                <div class="row">
+                  <div class="col-sm-12">
+                      <!-- text input -->
+                      <div class="form-group">
+                        <label>I like something</label>
+                      </div>
+                  </div>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="far fa-smile"></i></span>
+                    </div>
+                    <input type="text" name="like" id="like" class="form-control" placeholder="Write your feedback">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                      <!-- text input -->
+                      <div class="form-group">
+                        <label>I don't like something</label>
+                      </div>
+                  </div>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="far fa-angry"></i></span>
+                    </div>
+                    <input type="text" name="dontlike" id="dontlike" class="form-control" placeholder="Write your feedback">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <!-- textarea -->
+                    <div class="form-group">
+                      <label>I have a suggesstion</label>
+                      <textarea class="form-control" name="suggestion" id="suggestion" rows="3" placeholder="Write your feedback"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <small style="color:red"><?php echo $msg; ?></small>
+                  </div>
+                </div>
           </div>
+          <div class="card-footer">
+            <button type="submit" name="feedback" class="btn btn-primary">Send Feedback</button>
+          </div>
+        </form>
         </div>
         <!-- /.col-->
       </div>
