@@ -59,7 +59,7 @@ if (empty($_SESSION['name'])){
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="home.php" class="brand-link">
       <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
@@ -180,9 +180,9 @@ if (empty($_SESSION['name'])){
                 <!-- <p>Page <code>1</code></p> -->
                 <div class="input-group input-group-sm mb-3">
                   <input type="text" class="form-control" id="titlepaperwork" value="" placeholder="Title Paperwork"> 	&nbsp;	&nbsp;
-                  <input type="text" class="form-control" id="createdby" value="" placeholder="Created By" readonly> 	&nbsp;	&nbsp;
+                  <input type="text" class="form-control" id="createdby" value="<?php echo $_SESSION['name']; ?>" placeholder="Created By" readonly> 	&nbsp;	&nbsp;
                   <span class="input-group-append">
-                    <button type="button" class="btn btn-info btn-flat" id="AddPage">Save Paperwork</button>
+                    <button type="button" class="btn btn-info btn-flat" id="SavePaperwork">Save Paperwork</button>
                   </span>
                 </div>
                 <div class="input-group input-group-sm mb-3">
@@ -260,6 +260,45 @@ if (empty($_SESSION['name'])){
         $("#div_"+valuepage).remove();
         $("#valuepage").val(valuepage);
       }
+
+    });
+
+
+    $("#SavePaperwork").on("click", function() {
+
+        var valuepage = $("#valuepage").val();
+        var datapage = [];
+
+        for (i=1; i<=valuepage; i++) {
+
+          console.log($("#page_"+i).val());
+          datapage.push($("#page_"+i).val())
+
+        }
+
+        console.log(datapage);
+        $.ajax({
+          url: "paperwork/paperwork.php",
+          dataType: "text",
+          type: "POST",
+          data: {
+            "function": "save",
+            "titlepage": $("#titlepaperwork").val(),
+            "createdby": $("#createdby").val(),
+            "noofpage": $("#valuepage").val(),
+            "datapage": datapage
+          },
+          success: function(data) {
+
+            console.log(data);
+            alert (data);
+            location.reload();
+
+          }
+        });
+
+
+
 
     });
 

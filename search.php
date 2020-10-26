@@ -34,8 +34,8 @@ include 'db/dbconfig.php';
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
   <style>
-    th { font-size: 12px; }
-    td { font-size: 11px; }
+    /* th { font-size: 14px; }
+    td { font-size: 13px; } */
 
     .selected {
       background-color: #d1f9ff;
@@ -74,7 +74,7 @@ include 'db/dbconfig.php';
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="home.php" class="brand-link">
       <img src="logo.png"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
@@ -187,7 +187,7 @@ include 'db/dbconfig.php';
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="example1" class="table table-bordered nowrap">
+                <table id="example1" class="table table-bordered nowrap" style="width:100%">
                   <thead>
                   <tr>
                     <th>No</th>
