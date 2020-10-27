@@ -5,7 +5,6 @@ if (empty($_SESSION['name'])){
   die();
 }
 include 'db/dbconfig.php';
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,6 +27,13 @@ include 'db/dbconfig.php';
   <!-- DataTables -->
   <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.4/css/buttons.dataTables.min.css">
+
+    <!-- CSS PRINT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <!-- <link rel="stylesheet" href="plugins/jasonday-printThis/assets/css/normalize.css">
+  <link rel="stylesheet" href="plugins/jasonday-printThis/assets/css/skeleton.css"> -->
+
 
   <link href="plugins/jquery-steps/demo/css/jquery.steps.css" rel="stylesheet">
   <!-- Google Font: Source Sans Pro -->
@@ -192,9 +198,16 @@ include 'db/dbconfig.php';
                   <tr>
                     <th>No</th>
                     <th>View</th>
+                    <?php if ($_SESSION['group_system'] == "Pengarah Program") { ?>
                     <th>Edit</th>
-                    <th>Delete</th>
-                    <th>Approval</th>                    
+                    <?php } ?>
+                    <?php if ($_SESSION['group_system'] == "Sokongan") { ?>
+                    <th>Comment</th>
+                    <?php } ?>
+                    <!-- <th>Delete</th> -->
+                    <?php if ($_SESSION['group_system'] == "Pengarah") { ?>
+                    <th>Approval</th>           
+                    <?php } ?>         
                     <th>Title</th>
                     <th>Owner</th>
                     <th>Status Approval</th>
@@ -202,6 +215,10 @@ include 'db/dbconfig.php';
                     <th>Created Date</th>
                     <th>Updated By</th>
                     <th>Last Updated</th>
+                    <th>Comment By</th>
+                    <th>Date Comment</th>
+                    <th>Approve By</th>
+                    <th>Date Approve</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -213,13 +230,33 @@ include 'db/dbconfig.php';
                       // output data of each row
                       $no = 1;
                       while($row = $result->fetch_assoc()) {
+                        $id = $row['id'];
                     ?>
                     <tr>
                         <td><?php echo $no; ?></td>
-                        <td><?php echo "<button type=\"button\" class=\"btn btn-primary btn-xs\" id=\"view\" >View</button>"; ?></td>
-                        <td><?php echo "<button type=\"button\" class=\"btn btn-warning btn-xs\" id=\"edit\" >Edit</button>"; ?></td>
-                        <td><?php echo "<button type=\"button\" class=\"btn btn-danger btn-xs\" id=\"delete\" >Delete</button>"; ?></td>
-                        <td><?php echo "<button type=\"button\" class=\"btn btn-info btn-xs\" id=\"approve\" >Approve</button>"; ?></td>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-primary btn-xs\" onclick=\"view($id)\" >View</button>"; ?></td>
+                        <?php if ($_SESSION['group_system'] == "Pengarah Program") { ?>
+                          <?php if ($row['status'] == "Pending Approval") { ?>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-warning btn-xs\" onclick=\"edit($id)\" >Edit</button>"; ?></td>
+                          <?php } else { ?>
+                            <td></td>
+                          <?php } ?>
+                        <?php } ?>
+                        <?php if ($_SESSION['group_system'] == "Sokongan") { ?>
+                          <?php if ($row['status'] == "Pending Approval") { ?>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-success btn-xs\" onclick=\"comment($id)\" >Comment</button>"; ?></td>
+                          <?php } else { ?>
+                            <td></td>
+                          <?php } ?>
+                        <?php } ?>
+                        <!-- <td><?php echo "<button type=\"button\" class=\"btn btn-danger btn-xs\" onclick=\"delete($id)\" >Delete</button>"; ?></td> -->
+                        <?php if ($_SESSION['group_system'] == "Pengarah") { ?>
+                          <?php if ($row['status'] == "Pending Approval") { ?>
+                        <td><?php echo "<button type=\"button\" class=\"btn btn-info btn-xs\" onclick=\"approve($id)\" >Approve</button>"; ?></td>
+                          <?php } else { ?>
+                            <td></td>
+                          <?php } ?>
+                        <?php } ?>
                         <td><?php echo $row['title']; ?></td>
                         <td><?php echo $row['owner']; ?></td>
                         <td><?php echo $row['status']; ?></td>
@@ -227,6 +264,10 @@ include 'db/dbconfig.php';
                         <td><?php echo $row['createddate']; ?></td>
                         <td><?php echo $row['updatedby']; ?></td>
                         <td><?php echo $row['lastupdate']; ?></td>
+                        <td><?php echo $row['commentby']; ?></td>
+                        <td><?php echo $row['datecomment']; ?></td>
+                        <td><?php echo $row['approveby']; ?></td>
+                        <td><?php echo $row['dateapprove']; ?></td>
                     </tr>
                     <?php
                         $no++;
@@ -248,6 +289,53 @@ include 'db/dbconfig.php';
     <!-- /.content -->
 
 
+    <div class="modal fade" id="modalview">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="paperworktitle"></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="pages"></div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+            <!-- <button type="button" class="btn btn-primary" id="print">Print</button> -->
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+
+    <div class="modal fade" id="modalComment">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Comment</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="text" name="id_comment" id="id_comment" hidden>
+            <textarea name="comment" id="comment" cols="30" rows="10" style="width:100%;"></textarea>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="CommentPage">Comment</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
 
   </div>
@@ -289,10 +377,33 @@ include 'db/dbconfig.php';
 <script src="plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script>
+
+  <!-- printThis -->
+  <script type="text/javascript" src="plugins/jasonday-printThis/printThis.js"></script>
+  <script src="https://raw.githubusercontent.com/erikzaadi/jQueryPlugins/master/jQuery.printElement/jquery.printElement.js"></script>
 
 <script>
   $(function () {
+
+    $("#print").on("click", function() {
+
+      window.print();
+
+    });
+
+
     var table = $("#example1").DataTable({
+      dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+      ],
       "scrollX": true,
       "select": true
     });
@@ -308,17 +419,37 @@ include 'db/dbconfig.php';
     console.log(dataArr);      
     });
 
-    $("#edit").on("click", function() {
-      alert ("Edit");
+    $("#CommentPage").on("click", function() {
+
+      if($("#comment").val()) {
+        $.ajax({
+          url: "paperwork/paperwork.php",
+          dataType: "text",
+          type: "POST",
+          data: {
+            "function": "comment",
+            "id": $("#id_comment").val(),
+            "comment_msg": $("#comment").val()
+          },
+          success: function(data) {
+            alert (data);
+            location.reload();
+          }
+
+        });
+      } else {
+        alert ("Comment is null");
+      }
+
     });
 
-    $("#delete").on("click", function() {
-      alert ("Delete");
-    });
+    // $("#delete").on("click", function() {
+    //   alert ("Delete");
+    // });
 
-    $("#approve").on("click", function() {
-      alert ("Approve");
-    });
+    // $("#approve").on("click", function() {
+    //   alert ("Approve");
+    // });
 
     $('#example1 tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
@@ -331,6 +462,105 @@ include 'db/dbconfig.php';
     });
 
   });
+
+  function view(id) {
+
+    $("#pages").empty();
+
+    $.ajax({
+        url: "paperwork/paperwork.php",
+        dataType: "json",
+        type: "POST",
+        data: {
+          "function": "view",
+          "id": id,
+        },
+        success: function(data) {
+
+          console.log(data);
+          console.log(data.paperwork.length);
+          for (i=0; i<data.paperwork.length; i++) {
+            var valuepage = i + 1;
+            var template = '<div class="input-group input-group-sm" id="div_'+valuepage+'"><textarea class="textarea" id="page_'+valuepage+'" placeholder="Place some text here" style="width: 100%;  line-height: 18px; border: 1px solid #dddddd; padding: 10px;" readonly>'+data.paperwork[i]+'</textarea></div>';
+            $("#pages").append(template);
+            summernote(valuepage);
+            // $("#valuepage").val(valuepage);
+
+          }
+          $("#paperworktitle").text(data.title);
+
+
+
+
+        }
+      });
+    $("#modalview").modal('show');
+
+  }
+
+  function edit(id) {
+    window.location.replace("http://localhost/editor/editpaperwork.php?id="+id);
+  }
+
+  function comment(id) {
+
+    $("#id_comment").val(id);
+    $("#modalComment").modal("show");
+
+  }
+
+  function approve(id) {
+
+    $.ajax({
+        url: "paperwork/paperwork.php",
+        dataType: "text",
+        type: "POST",
+        data: {
+          "function": "approve",
+          "id": id,
+        },
+        success: function(data) {
+
+          alert (data);
+          location.reload();
+
+        }      
+    })
+
+  }
+
+  function summernote(no){
+
+    // Summernote
+    $('#page_'+no).summernote({
+        height: 400,
+        minHeight: 400,              
+        maxHeight: 600,
+        codemirror: { // codemirror options
+          theme: 'monokai'
+        },
+        toolbar: [
+          ['misc', ['print']],
+          // ['style', ['bold', 'italic', 'underline', 'clear']],
+          // ['font', ['strikethrough', 'superscript', 'subscript']],
+          // ['fontsize', ['fontsize']],
+          // ['color', ['color']],
+          // ['para', ['ul', 'ol', 'paragraph']],
+          ['height', ['height']],
+          
+
+          ['style', ['style']],
+          ['font-style', ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'clear']],
+          ['font', ['fontname']],
+          ['font-size',['fontsize']],
+          ['font-color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video', 'hr']],
+          ['misc', ['fullscreen', 'codeview', 'help']]
+        ],
+    }).summernote("disable");
+  }
 </script>
 </body>
 </html>
